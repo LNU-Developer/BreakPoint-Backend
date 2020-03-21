@@ -21,8 +21,6 @@
   "author": "Rickard Marjanovic",
   "license": "MIT",
   "dependencies": {
-    
-    "body-parser": "^1.19.0",
     "dotenv-extended": "^2.7.1",
     "express": "^4.17.1",
     "firebase": "^7.12.0",
