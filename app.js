@@ -25,16 +25,38 @@ app.use(cors({
   origin: 'http://localhost:4200'
 }))
 
-app.get('/', function (req, res) {
-  res.send('HTTP GET Request')
-  // Insert key,value pair to database
-  firebase.database().ref('/TestMessages').set({ TestMessage: 'GET Request' })
-})
-
-app.get('/organisation/:name/', function (req, res) {
+// Fetch all tasks from an orginization
+app.get('/api/v1/organisation/:no/tasks/all', function (req, res) {
   const payload = req.params.name
   console.log(payload)
   res.send({ name: payload })
+})
+
+// Fetch all tasks from a user
+app.get('/api/v1/user/:no/tasks/all/', function (req, res) {
+  const payload = req.params.name
+  console.log(payload)
+  res.send({ name: payload })
+})
+
+// fetch a specific task
+app.get('/api/v1/organization/:no/tasks/:id/', function (req, res) {
+
+})
+
+// Add new task
+app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
+
+})
+
+// Edit task
+app.post('/api/v1/organization/:no/tasks/:id/', function (req, res) {
+
+})
+
+// delete edit task
+app.delete('/api/v1/organization/:no/tasks/:id/', function (req, res) {
+
 })
 
 app.listen(process.env.PORT, () => {
