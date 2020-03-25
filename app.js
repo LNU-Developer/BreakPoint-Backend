@@ -1,11 +1,13 @@
 const express = require('express')
 const firebase = require('firebase')
 const path = require('path')
+const cors = require('cors')
+
 require('dotenv').config({ path: path.join(__dirname) + '/.env' })
 
 const app = express()
 app.use(express.json()) // Used to parse JSON bodies
-app.use(express.urlencoded()) // Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 
 const config = {
   apiKey: process.env.apiKey,
@@ -19,10 +21,20 @@ const config = {
 }
 firebase.initializeApp(config)
 
+app.use(cors({
+  origin: 'http://localhost:4200'
+}))
+
 app.get('/', function (req, res) {
   res.send('HTTP GET Request')
   // Insert key,value pair to database
   firebase.database().ref('/TestMessages').set({ TestMessage: 'GET Request' })
+})
+
+app.get('/organisation/:name/', function (req, res) {
+  const payload = req.params.name
+  console.log(payload)
+  res.send({ name: payload })
 })
 
 app.listen(process.env.PORT, () => {
