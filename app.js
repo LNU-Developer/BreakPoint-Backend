@@ -1,5 +1,5 @@
 const express = require('express')
-const firebase = require('firebase')
+const firebase = require('firebase-admin')
 const path = require('path')
 const cors = require('cors')
 
@@ -9,17 +9,14 @@ const app = express()
 app.use(express.json()) // Used to parse JSON bodies
 app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 
-const config = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  databaseURL: process.env.databaseURL,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId,
-  measurementId: process.env.measurementId
-}
-firebase.initializeApp(config)
+var serviceAccount = require('./credentials/firebaseCredentials.json')
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
+  databaseURL: 'https://basepoint-ca3ca.firebaseio.com'
+})
+
+const db = firebase.database()
 
 app.use(cors({
   origin: 'http://localhost:4200'
@@ -27,9 +24,14 @@ app.use(cors({
 
 // Fetch all tasks from an orginization
 app.get('/api/v1/organisation/:no/tasks/all', function (req, res) {
-  const payload = req.params.name
-  console.log(payload)
-  res.send({ name: payload })
+  const org = req.params.no
+  const ref = db.ref('organizations/' + org).child('tasks')
+  ref.on('value', function (snapshot) {
+    res.send(snapshot.val())
+    console.log('All tasks from ' + org + ' was retreived.')
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
 })
 
 // Fetch all tasks from a user
@@ -46,7 +48,12 @@ app.get('/api/v1/organization/:no/tasks/:id/', function (req, res) {
 
 // Add new task
 app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
+  const org = req.params.no
+  const ref = db.ref('organizations/' + org).child('tasks')
+  const payload = req.body
+  ref.push(payload.payload)
 
+  console.log('A new task was created on ' + org)
 })
 
 // Edit task
