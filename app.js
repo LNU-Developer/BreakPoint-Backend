@@ -26,9 +26,13 @@ app.use(cors({
 app.get('/api/v1/organisation/:no/tasks/all', function (req, res) {
   const org = req.params.no
   const ref = db.ref('organizations/' + org).child('tasks')
-  ref.on('value', function (snapshot) {
-    res.send(snapshot.val())
-    console.log('All tasks from ' + org + ' was retreived.')
+  ref.once('value', function (snapshot) {
+    if (snapshot.exists()) {
+      res.send(Object.values(snapshot.val()))
+      console.log('All tasks from ' + org + ' was retreived.')
+    } else {
+      res.send()
+    }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
   })
@@ -52,7 +56,7 @@ app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
   const ref = db.ref('organizations/' + org).child('tasks')
   const payload = req.body
   ref.push(payload.payload)
-
+  res.send()
   console.log('A new task was created on ' + org)
 })
 
