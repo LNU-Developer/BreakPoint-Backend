@@ -22,8 +22,12 @@ app.use(cors({
   origin: 'http://localhost:4200'
 }))
 
+app.get('/api/v1/organization/test/', function (req, res) {
+  res.send('test')
+})
+
 // Fetch all tasks from an orginization
-app.get('/api/v1/organisation/:no/tasks/all', function (req, res) {
+app.get('/api/v1/organization/:no/tasks/all/', function (req, res) {
   const org = req.params.no
   const ref = db.ref('organizations/' + org).child('tasks')
   ref.once('value', function (snapshot) {
@@ -31,11 +35,38 @@ app.get('/api/v1/organisation/:no/tasks/all', function (req, res) {
       res.send(Object.values(snapshot.val()))
       console.log('All tasks from ' + org + ' was retreived.')
     } else {
-      res.send()
+      res.send() // TODO: send back a proper message
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
   })
+})
+
+// Fetch all users from an organization
+app.get('/api/v1/organization/:no/users/all/', function (req, res) {
+  const org = req.params.no
+  console.log(org)
+  const ref = db.ref('organizations/' + org).child('users')
+  ref.once('value', function (snapshot) {
+    if (snapshot.exists()) {
+      res.send(Object.values(snapshot.val()))
+      console.log('All users from ' + org + ' was retreived.')
+    } else {
+      res.send() // TODO: send back a proper message
+    }
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
+})
+
+// Assign a user to an organization
+app.post('/api/v1/organization/:no/users/adduser/', function (req, res) {
+  const org = req.params.no
+  const ref = db.ref('organizations/' + org).child('users')
+  const payload = req.body
+  ref.push(payload.payload)
+  res.send() // TODO: send back a proper message
+  console.log('A new user was assigned on ' + org)
 })
 
 // Fetch all tasks from a user
@@ -56,7 +87,7 @@ app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
   const ref = db.ref('organizations/' + org).child('tasks')
   const payload = req.body
   ref.push(payload.payload)
-  res.send()
+  res.send() // TODO: send back a proper message
   console.log('A new task was created on ' + org)
 })
 
