@@ -1,6 +1,8 @@
 const express = require('express')
 const path = require('path')
 const cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('./swagger.json')
 
 require('dotenv').config({ path: path.join(__dirname) + '/.env' })
 
@@ -13,6 +15,7 @@ app.use(cors({
 }))
 
 // Routes.
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api/v1', require('./routes/apiRouter'))
 
 app.listen(process.env.PORT, () => {
