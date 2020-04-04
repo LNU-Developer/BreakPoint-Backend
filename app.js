@@ -22,10 +22,6 @@ app.use(cors({
   origin: 'http://localhost:4200'
 }))
 
-app.get('/api/v1/organization/test/', function (req, res) {
-  res.send('test')
-})
-
 // Fetch all tasks from an orginization
 app.get('/api/v1/organization/:no/tasks/all/', function (req, res) {
   const org = req.params.no
@@ -45,7 +41,6 @@ app.get('/api/v1/organization/:no/tasks/all/', function (req, res) {
 // Fetch all users from an organization
 app.get('/api/v1/organization/:no/users/all/', function (req, res) {
   const org = req.params.no
-  console.log(org)
   const ref = db.ref('organizations/' + org).child('users')
   ref.once('value', function (snapshot) {
     if (snapshot.exists()) {
@@ -59,6 +54,7 @@ app.get('/api/v1/organization/:no/users/all/', function (req, res) {
   })
 })
 
+// TODO:Not fixed yet
 // Assign a user to an organization
 app.post('/api/v1/organization/:no/users/adduser/', function (req, res) {
   const org = req.params.no
@@ -69,6 +65,7 @@ app.post('/api/v1/organization/:no/users/adduser/', function (req, res) {
   console.log('A new user was assigned on ' + org)
 })
 
+// TODO: Not fixed yet
 // Fetch all tasks from a user
 app.get('/api/v1/user/:no/tasks/all/', function (req, res) {
   const payload = req.params.name
@@ -78,7 +75,24 @@ app.get('/api/v1/user/:no/tasks/all/', function (req, res) {
 
 // fetch a specific task
 app.get('/api/v1/organization/:no/tasks/:id/', function (req, res) {
-
+  const org = req.params.no
+  const id = req.params.id
+  const ref = db.ref('organizations/' + org).child('tasks')
+  ref.once('value', function (snapshot) {
+    if (snapshot.exists()) {
+      const data = Object.values(snapshot.val())
+      data.forEach(element => {
+        if (element.id === id) {
+          res.send(element)
+          console.log('Task with ID ' + id + ' from ' + org + ' was retreived.')
+        }
+      })
+    } else {
+      res.send() // TODO: send back a proper message
+    }
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
 })
 
 // Add new task
@@ -87,16 +101,32 @@ app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
   const ref = db.ref('organizations/' + org).child('tasks')
   const payload = req.body
   ref.push(payload.payload)
-  res.send() // TODO: send back a proper message
-  console.log('A new task was created on ' + org)
+    .then((snapshot) => {
+      ref.child(snapshot.key).update({ id: snapshot.key })
+      res.send()
+      // TODO: send back a proper message
+      console.log('A new task was created on ' + org)
+    })
 })
 
 // Edit task
 app.post('/api/v1/organization/:no/tasks/:id/', function (req, res) {
-
+  const org = req.params.no
+  const id = req.params.id
+  const payload = req.body
+  const ref = db.ref('organizations/' + org).child('tasks').child(id)
+  ref.update(payload.payload, function (error) {
+    if (error) {
+      console.log('The read failed: ' + error.code)
+    } else {
+      // TODO: send back a proper message
+      res.send()
+      console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
+    }
+  })
 })
 
-// delete edit task
+// delete task
 app.delete('/api/v1/organization/:no/tasks/:id/', function (req, res) {
 
 })
