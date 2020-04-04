@@ -110,7 +110,7 @@ app.post('/api/v1/organization/:no/tasks/new/', function (req, res) {
 })
 
 // Edit task
-app.post('/api/v1/organization/:no/tasks/:id/', function (req, res) {
+app.put('/api/v1/organization/:no/tasks/:id/', function (req, res) {
   const org = req.params.no
   const id = req.params.id
   const payload = req.body
@@ -127,8 +127,15 @@ app.post('/api/v1/organization/:no/tasks/:id/', function (req, res) {
 })
 
 // delete task
-app.delete('/api/v1/organization/:no/tasks/:id/', function (req, res) {
-
+app.delete('/api/v1/organization/:no/tasks/:id/delete/', function (req, res) {
+  const org = req.params.no
+  const id = req.params.id
+  db.ref('organizations/' + org).child('tasks').child(id).remove()
+    .then(() => {
+      // TODO: send back a proper message
+      res.send()
+      console.log('Task with ID ' + id + ' from ' + org + ' was deleted.')
+    })
 })
 
 app.listen(process.env.PORT, () => {
