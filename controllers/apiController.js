@@ -86,8 +86,8 @@ apiController.orgTask = (req, res) => {
 apiController.orgNewTask = (req, res) => {
   const org = req.params.no
   const ref = db.ref('organizations/' + org).child('tasks')
-  const payload = req.body
-  ref.push(payload.payload)
+  const payload = req.body.payload || req.body
+  ref.push(payload)
     .then((snapshot) => {
       ref.child(snapshot.key).update({ id: snapshot.key })
       res.send()
@@ -100,9 +100,9 @@ apiController.orgNewTask = (req, res) => {
 apiController.orgEditTask = (req, res) => {
   const org = req.params.no
   const id = req.params.id
-  const payload = req.body
+  const payload = req.body.payload || req.body
   const ref = db.ref('organizations/' + org).child('tasks').child(id)
-  ref.update(payload.payload, function (error) {
+  ref.update(payload, function (error) {
     if (error) {
       console.log('The read failed: ' + error.code)
     } else {

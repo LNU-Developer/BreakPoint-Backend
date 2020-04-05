@@ -11,12 +11,6 @@
     },
     "host": "localhost:3000",
     "basePath": "/api/v1",
-    "tags": [
-      {
-        "name": "Users",
-        "description": "API for users in the system"
-      }
-    ],
     "schemes": [
       "http"
     ],
@@ -27,107 +21,154 @@
       "application/json"
     ],
     "paths": {
-      "/users": {
-        "post": {
-          "tags": [
-            "Users"
-          ],
-          "description": "Create new user in system",
-          "parameters": [
-            {
-              "name": "user",
-              "in": "body",
-              "description": "User that we want to create",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "responses": {
-            "200": {
-              "description": "New user is created",
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        },
-        "get": {
-          "tags": [
-            "Users"
-          ],
-          "summary": "Get all users in system",
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "$ref": "#/definitions/Users"
-              }
-            }
-          }
-        }
-      },
-      "/users/{userId}": {
+      "/organization/{orgId}/tasks/all/": {
         "parameters": [
           {
-            "name": "userId",
+            "name": "orgId",
             "in": "path",
             "required": true,
-            "description": "ID of user that we want to find",
+            "description": "ID of organization",
             "type": "string"
           }
         ],
         "get": {
           "tags": [
-            "Users"
+            "Organization"
           ],
-          "summary": "Get user with given ID",
+          "summary": "Get all tasks for a specific organization",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type":"array",
+                "items": {
+                "$ref": "#/definitions/Tasks"
+              }
+              }
+            }
+          }
+        }
+      },
+      "/organization/{orgId}/tasks/new/": {
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "ID of organization",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Task object that needs to be added to the organization",
+            "schema": {
+              "$ref": "#/definitions/Tasks"
+            }
+          }
+        ],
+        "post": {
+          "tags": [
+            "Organization"
+          ],
+          "summary": "Create a new task on specified organization",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/organization/{orgId}/tasks/{taskId}/": {
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "ID of organization",
+            "type": "string"
+          },
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "description": "ID of task",
+            "type": "string"
+          }
+        ],
+        "get": {
+          "tags": [
+            "Organization"
+          ],
+          "summary": "Get a specific task on specified organization",
           "responses": {
             "200": {
               "description": "User is found",
               "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          }
-        },
-        "delete": {
-          "summary": "Delete user with given ID",
-          "tags": [
-            "Users"
-          ],
-          "responses": {
-            "200": {
-              "description": "User is deleted",
-              "schema": {
-                "$ref": "#/definitions/User"
+                "$ref": "#/definitions/Tasks"
               }
             }
           }
         },
         "put": {
-          "summary": "Update user with give ID",
           "tags": [
-            "Users"
+            "Organization"
           ],
           "parameters": [
             {
-              "name": "user",
               "in": "body",
-              "description": "User with new values of properties",
+              "name": "body",
+              "description": "Task object that needs to be added to the organization",
               "schema": {
-                "$ref": "#/definitions/User"
+                "required": [
+                  "id"
+                ],
+                "$ref": "#/definitions/Tasks"
               }
             }
           ],
+          "summary": "Edit a specific task on specified organization",
           "responses": {
             "200": {
-              "description": "User is updated",
+              "description": "OK"
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "Organization"
+          ],
+          "summary": "Delete a specific task on specified organization",
+          "responses": {
+            "200": {
+              "description": "OK"
+            }
+          }
+        }
+      },
+      "/organization/{orgId}/users/all/": {
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "ID of organization",
+            "type": "string"
+          }
+        ],
+        "get": {
+          "tags": [
+            "Organization"
+          ],
+          "summary": "Get users allocated to a specific organization",
+          "responses": {
+            "200": {
+              "description": "OK",
               "schema": {
-                "$ref": "#/definitions/User"
+                "type":"array",
+                "items": {
+                "$ref": "#/definitions/Users"
+              }
               }
             }
           }
@@ -135,31 +176,57 @@
       }
     },
     "definitions": {
-      "User": {
+      "Tasks": {
         "required": [
-          "email",
-          "_id"
+          "id",
+          "organization",
+          "assignee",
+          "title",
+          "deadline",
+          "state"
         ],
         "properties": {
-          "_id": {
-            "type": "string",
-            "uniqueItems": true
-          },
-          "email": {
-            "type": "string",
-            "uniqueItems": true
-          },
-          "lastName": {
+          "id": {
             "type": "string"
           },
-          "firstName": {
+          "organization": {
+            "type": "string"
+          },          
+          "assignee": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
             "type": "string"
           }
         }
       },
       "Users": {
-        "type": "array",
-        "$ref": "#/definitions/User"
+        "required": [
+          "id",
+          "email",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },          
+          "email": {
+            "type": "string"
+          }
       }
     }
   }
+}
