@@ -14,7 +14,7 @@ app.use(cors({
   origin: 'http://localhost:4200'
 }))
 
-// Routes.
+// Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api/v1', require('./routes/apiRouter'))
 
