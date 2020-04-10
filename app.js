@@ -11,7 +11,7 @@ app.use(express.json()) // Used to parse JSON bodies
 app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 
 app.use(cors({
-  origin: 'http://localhost:4200'
+  origin: 'inviflow.n00bs.io'
 }))
 
 const passport = require('passport')
