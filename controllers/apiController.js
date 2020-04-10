@@ -4,7 +4,7 @@ var serviceAccount = require('../credentials/firebaseCredentials.json')
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
-  databaseURL: 'https://basepoint-ca3ca.firebaseio.com'
+  databaseURL: process.env.databaseURL
 })
 
 const db = firebase.database()
