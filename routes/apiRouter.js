@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const apiController = require('../controllers/apiController')
+const authController = require('../controllers/authController')
 
 // Fetch all tasks from an orginization
 router.get('/organization/:no/tasks/all/', apiController.orgTasks)
@@ -28,5 +29,9 @@ router.post('/organization/:no/users/adduser/', apiController.assignUser)
 // TODO: Not fixed yet
 // Fetch all tasks from a user
 router.get('/user/:no/tasks/all/', apiController.userTasks)
+
+// Exchange Code to Auth code
+router.get('/authenticate/', authController.requestCode)
+router.post('/authenticate/', authController.exchangeCode)
 
 module.exports = router
