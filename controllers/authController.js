@@ -20,7 +20,7 @@ authController.requestCode = (req, res) => {
   res.redirect(url)
 }
 
-authController.exchangeCode = (req, res) => { // TODO: Fix finding or adding user to database
+authController.exchangeCode = (req, res) => {
   const code = decodeURIComponent(req.body.payload.code)
 
   // Fetch Auth token/ID token
@@ -39,21 +39,27 @@ authController.exchangeCode = (req, res) => { // TODO: Fix finding or adding use
         .then(result => result.json())
         .then(id => {
           // Add or fetch from user to database
+          const payload =
+          {
+            name: id.name,
+            email: id.email
+          }
           const ref = db.ref('users')
           ref.once('value', function (snapshot) {
             if (snapshot.exists()) {
               const data = Object.values(snapshot.val())
-              data.forEach(element => {
-                if (element.email === id.email) {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].email === id.email) {
                   console.log('User ' + id.email + ' logged in')
+                } else if (i === data.length - 1) {
+                  ref.push(payload)
+                    .then((snapshot) => {
+                      ref.child(snapshot.key).update({ id: snapshot.key })
+                      console.log('A new user ' + (id.email) + ' was created')
+                    })
                 }
-              })
-            } else {
-              const payload =
-              {
-                name: id.name,
-                email: id.email
               }
+            } else {
               ref.push(payload)
                 .then((snapshot) => {
                   ref.child(snapshot.key).update({ id: snapshot.key })
@@ -71,7 +77,7 @@ authController.exchangeCode = (req, res) => { // TODO: Fix finding or adding use
             expiresIn: 120,
             subject: id.email
           })
-          res.json({
+          res.status(200).json({
             idToken: jwtBearerToken,
             expiresIn: 120
           })
