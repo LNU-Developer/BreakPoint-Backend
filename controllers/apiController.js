@@ -1,6 +1,6 @@
 const firebase = require('firebase-admin')
 const apiController = {}
-var serviceAccount = require('../credentials/firebaseCredentials.json')
+const serviceAccount = require('../credentials/firebaseCredentials.json')
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
@@ -11,6 +11,7 @@ const db = firebase.database()
 
 // Fetch all tasks from an orginization
 apiController.orgTasks = (req, res) => {
+  console.log(req.user) // TODO: check which org this user can see
   const org = req.params.no
   const ref = db.ref('organizations/' + org).child('tasks')
   ref.once('value', function (snapshot) {
