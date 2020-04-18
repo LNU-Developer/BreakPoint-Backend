@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken')
+const fs = require('fs')
 const fetch = require('node-fetch')
 const pkceChallenge = require('pkce-challenge')
 const authController = {}
@@ -23,7 +25,18 @@ authController.exchangeCode = (req, res) => {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
     .then(res => res.json())
-    .then(json => res.send(json))
+    .then(json => {
+      const RSA_PRIVATE_KEY = fs.readFileSync('././credentials/jwtRS256.key', 'utf8')
+      const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
+        algorithm: 'RS256',
+        expiresIn: 120,
+        subject: 'test'
+      })
+      res.json({
+        idToken: jwtBearerToken,
+        expiresIn: 120
+      })
+    })
 }
 
 module.exports = authController

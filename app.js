@@ -18,6 +18,14 @@ app.use(cors({
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api/v1', require('./routes/apiRouter'))
 
+// Auth error message
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+    console.log(err.message)
+    res.status(401).send(err.message)
+  }
+})
+
 app.listen(process.env.PORT, () => {
   console.log('Server running on http://localhost:' + process.env.PORT)
   console.log('Press Ctrl-C to terminate...\n')
