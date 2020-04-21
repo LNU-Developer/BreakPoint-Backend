@@ -11,7 +11,6 @@ const db = firebase.database()
 
 // Fetch all tasks from an orginization
 apiController.orgTasks = (req, res) => {
-  console.log(req.user) // TODO: check which org this user can see
   const org = req.params.no
   const ref = db.ref('organizations/' + org).child('tasks')
   ref.once('value', function (snapshot) {
@@ -53,12 +52,35 @@ apiController.assignUser = (req, res) => {
   console.log('A new user was assigned on ' + org)
 }
 
-// TODO: Not fixed yet
 // Fetch all tasks from a user
 apiController.userTasks = (req, res) => {
-  const payload = req.params.name
-  console.log(payload)
-  res.send({ name: payload })
+  const ref = db.ref('users/').orderByChild('email').equalTo(req.user.sub)
+  ref.once('value', function (snapshot) {
+    if (snapshot.exists()) {
+      const user = Object.values(snapshot.val())
+      const tasks = []
+
+      const organisationString = user[0].organisation
+      const tmpString = organisationString.substr(1).slice(0, -1)
+      const organisationArray = tmpString.split(', ')
+
+      for (let i = 0; i < organisationArray.length; i++) {
+        db.ref('organizations/' + organisationArray[i]).child('tasks').once('value', function (ss) {
+          ss.forEach(child => {
+            tasks.push(child.val())
+          })
+          if (i === organisationArray.length - 1) {
+            res.send(tasks)
+          }
+        })
+      }
+      // console.log('All tasks from ' + req.user.sub + ' was retreived.')
+    } else {
+      res.send() // TODO: send back a proper message
+    }
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
 }
 
 // fetch a specific task

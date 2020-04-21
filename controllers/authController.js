@@ -48,10 +48,12 @@ authController.exchangeCode = (req, res) => {
           ref.once('value', function (snapshot) {
             if (snapshot.exists()) {
               const data = Object.values(snapshot.val())
+              let duplicate = false
               for (let i = 0; i < data.length; i++) {
                 if (data[i].email === id.email) {
                   console.log('User ' + id.email + ' logged in')
-                } else if (i === data.length - 1) {
+                  duplicate = true
+                } else if (i === data.length - 1 && duplicate === false) {
                   ref.push(payload)
                     .then((snapshot) => {
                       ref.child(snapshot.key).update({ id: snapshot.key })

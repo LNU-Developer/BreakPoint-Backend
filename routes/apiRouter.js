@@ -33,7 +33,7 @@ router.post('/organization/:no/users/adduser/', apiController.assignUser)
 
 // TODO: Not fixed yet
 // Fetch all tasks from a user
-router.get('/user/:no/tasks/all/', apiController.userTasks)
+router.get('/user/tasks/all/', checkIfAuthenticated, apiController.userTasks)
 
 // Exchange Code to Auth code
 router.get('/authenticate/', authController.requestCode)
