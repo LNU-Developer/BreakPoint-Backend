@@ -3,8 +3,16 @@ const path = require('path')
 const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('./swagger.json')
+const firebase = require('firebase-admin')
 
 require('dotenv').config({ path: path.join(__dirname) + '/.env' })
+
+const serviceAccount = require('./credentials/firebaseCredentials.json')
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(serviceAccount),
+  databaseURL: process.env.databaseURL
+})
 
 const app = express()
 app.use(express.json()) // Used to parse JSON bodies

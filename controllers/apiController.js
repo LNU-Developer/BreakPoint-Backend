@@ -1,11 +1,5 @@
 const firebase = require('firebase-admin')
 const apiController = {}
-const serviceAccount = require('../credentials/firebaseCredentials.json')
-
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  databaseURL: process.env.databaseURL
-})
 
 const db = firebase.database()
 
@@ -50,37 +44,6 @@ apiController.assignUser = (req, res) => {
   ref.push(payload.payload)
   res.send() // TODO: send back a proper message
   console.log('A new user was assigned on ' + org)
-}
-
-// Fetch all tasks from a user
-apiController.userTasks = (req, res) => {
-  const ref = db.ref('users/').orderByChild('email').equalTo(req.user.sub)
-  ref.once('value', function (snapshot) {
-    if (snapshot.exists()) {
-      const user = Object.values(snapshot.val())
-      const tasks = []
-
-      const organisationString = user[0].organisation
-      const tmpString = organisationString.substr(1).slice(0, -1)
-      const organisationArray = tmpString.split(', ')
-
-      for (let i = 0; i < organisationArray.length; i++) {
-        db.ref('organizations/' + organisationArray[i]).child('tasks').once('value', function (ss) {
-          ss.forEach(child => {
-            tasks.push(child.val())
-          })
-          if (i === organisationArray.length - 1) {
-            res.send(tasks)
-          }
-        })
-      }
-      // console.log('All tasks from ' + req.user.sub + ' was retreived.')
-    } else {
-      res.send() // TODO: send back a proper message
-    }
-  }, function (errorObject) {
-    console.log('The read failed: ' + errorObject.code)
-  })
 }
 
 // fetch a specific task
