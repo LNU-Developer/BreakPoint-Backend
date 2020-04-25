@@ -28,20 +28,20 @@ router.put('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.o
 // delete task
 router.delete('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgDeleteTask)
 
-// Fetch all users from an organization
-router.get('/organization/:no/users/all/', checkIfAuthenticated, apiController.orgUsers)
+// USER APIS -----------------------------------------------------------------------------------------------
+
+// Fetch all organisations for a user
+router.get('/user/organization/all/', checkIfAuthenticated, userController.userOrgs)
+
+// Fetch all tasks for a user
+router.get('/user/tasks/all/', checkIfAuthenticated, userController.userTasks)
+
+// Fetch users that are have access to a specific organization
+router.get('/organization/:no/users/all/', checkIfAuthenticated, userController.orgUsers)
 
 // TODO:Not fixed yet
 // Assign a user to an organization
 router.post('/organization/:no/users/adduser/', apiController.assignUser)
-
-// USER APIS -----------------------------------------------------------------------------------------------
-
-// Fetch all organisations from a user
-router.get('/user/organization/all/', checkIfAuthenticated, userController.userOrgs)
-
-// Fetch all tasks from a user
-router.get('/user/tasks/all/', checkIfAuthenticated, userController.userTasks)
 
 // AUTH APIS ----------------------------------------------------------------------------------------------
 

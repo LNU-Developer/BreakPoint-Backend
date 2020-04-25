@@ -25,7 +25,7 @@ userController.userTasks = (req, res) => {
           }
         })
       }
-      console.log('All tasks from ' + req.user.sub + ' was retreived.')
+      console.log('All tasks for ' + req.user.sub + ' was retreived.')
     } else {
       res.send() // TODO: send back a proper message
     }
@@ -45,7 +45,32 @@ userController.userOrgs = (req, res) => {
       const organizationArray = tmpString.split(', ')
       res.send(organizationArray)
 
-      console.log('All organisations from ' + req.user.sub + ' was retreived.')
+      console.log('All organisations for ' + req.user.sub + ' was retreived.')
+    } else {
+      res.send() // TODO: send back a proper message
+    }
+  }, function (errorObject) {
+    console.log('The read failed: ' + errorObject.code)
+  })
+}
+
+// Fetch all users with a specific access for org
+userController.orgUsers = (req, res) => {
+  const ref = db.ref('users/').orderByChild('organizations')
+  ref.once('value', function (snapshot) {
+    if (snapshot.exists()) {
+      const users = Object.values(snapshot.val())
+      const userWithAccess = []
+      users.forEach(element => {
+        if (element.organizations) {
+          element.organizations = element.organizations.substr(1).slice(0, -1).split(', ')
+          if (element.organizations.includes(req.params.no)) {
+            userWithAccess.push(element)
+          }
+        }
+      })
+      res.send(userWithAccess)
+      console.log('All users for ' + req.params.no + ' was retreived.')
     } else {
       res.send() // TODO: send back a proper message
     }

@@ -19,22 +19,6 @@ apiController.orgTasks = (req, res) => {
   })
 }
 
-// Fetch all users from an organization
-apiController.orgUsers = (req, res) => {
-  const org = req.params.no
-  const ref = db.ref('organizations/' + org).child('users')
-  ref.once('value', function (snapshot) {
-    if (snapshot.exists()) {
-      res.send(Object.values(snapshot.val()))
-      console.log('All users from ' + org + ' was retreived.')
-    } else {
-      res.send() // TODO: send back a proper message
-    }
-  }, function (errorObject) {
-    console.log('The read failed: ' + errorObject.code)
-  })
-}
-
 // TODO:Not fixed yet
 // Assign a user to an organization
 apiController.assignUser = (req, res) => {
