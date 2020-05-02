@@ -1,7 +1,49 @@
 const firebase = require('firebase-admin')
+const nodemailer = require('nodemailer')
 const apiController = {}
 
 const db = firebase.database()
+
+// Email settings
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.emailUsername,
+    pass: process.env.emailPassword
+  }
+})
+
+/** Function to send email containing param is information.
+ *
+ * @param {object} payload - Object containing payload of information to be sent.
+ * @param {string} org - Organization to be send.
+ */
+function sendEmail (payload, org) {
+  const tempEmail = payload.assignee.split('(')
+  const email = tempEmail[1].substr(0, tempEmail[1].length - 1)
+  var mailOptions = {
+    from: process.env.emailUsername,
+    to: email,
+    subject: 'Task assignee for ' + org,
+    text:
+    `
+    You have been assigned a new task at ${org} containing the following information:
+    Organization: ${org}
+    Assignee: ${payload.assignee}
+    Deadline ${payload.deadline}
+    Title: ${payload.title}
+    Description: ${payload.description}
+    `
+  }
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error)
+    } else {
+      console.log('Email sent: ' + info.response)
+    }
+  })
+}
 
 // Fetch all tasks from an orginization
 apiController.orgTasks = (req, res) => {
@@ -62,6 +104,7 @@ apiController.orgNewTask = (req, res) => {
       ref.child(snapshot.key).update({ id: snapshot.key })
       res.send()
       // TODO: send back a proper message
+      sendEmail(payload, org)
       console.log('A new task was created on ' + org)
     })
 }
@@ -72,14 +115,20 @@ apiController.orgEditTask = (req, res) => {
   const id = req.params.id
   const payload = req.body.payload || req.body
   const ref = db.ref('organizations/' + org).child('tasks').child(id)
-  ref.update(payload, function (error) {
-    if (error) {
-      console.log('The read failed: ' + error.code)
-    } else {
-      // TODO: send back a proper message
-      res.send()
-      console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
+  ref.once('value', function (snapshot) {
+    const data = Object.values(snapshot.val())
+    if (data.assignee !== payload.assignee) {
+      sendEmail(payload, org)
     }
+    ref.update(payload, function (error) {
+      if (error) {
+        console.log('The read failed: ' + error.code)
+      } else {
+        // TODO: send back a proper message
+        res.send()
+        console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
+      }
+    })
   })
 }
 
