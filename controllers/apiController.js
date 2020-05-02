@@ -4,7 +4,7 @@ const apiController = {}
 
 const db = firebase.database()
 
-// Email settings
+// Email settings for assignees
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
