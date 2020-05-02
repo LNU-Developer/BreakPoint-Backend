@@ -21,7 +21,6 @@ app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 app.use(cors({
   origin: 'http://localhost:4200/'
 }))
-
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api/v1', require('./routes/apiRouter'))
