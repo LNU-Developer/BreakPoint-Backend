@@ -76,12 +76,12 @@ authController.exchangeCode = (req, res) => {
           const RSA_PRIVATE_KEY = fs.readFileSync('././credentials/jwtRS256.key', 'utf8')
           const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
             algorithm: 'RS256',
-            expiresIn: 120,
+            expiresIn: 43200,
             subject: id.email
           })
           res.status(200).json({
             idToken: jwtBearerToken,
-            expiresIn: 120
+            expiresIn: 43200
           })
         })
     })
