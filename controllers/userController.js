@@ -27,7 +27,7 @@ userController.userTasks = (req, res) => {
       }
       console.log('All tasks for ' + req.user.sub + ' was retreived.')
     } else {
-      res.send() // TODO: send back a proper message
+      res.status(200).send()
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
@@ -47,7 +47,7 @@ userController.userOrgs = (req, res) => {
 
       console.log('All organisations for ' + req.user.sub + ' was retreived.')
     } else {
-      res.send() // TODO: send back a proper message
+      res.status(200).send()
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
@@ -72,7 +72,7 @@ userController.orgUsers = (req, res) => {
       res.send(userWithAccess)
       console.log('All users for ' + req.params.no + ' was retreived.')
     } else {
-      res.send() // TODO: send back a proper message
+      res.status(200).send()
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)

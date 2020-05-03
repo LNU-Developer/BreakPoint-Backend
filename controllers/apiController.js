@@ -54,7 +54,7 @@ apiController.orgTasks = (req, res) => {
       res.send(Object.values(snapshot.val()))
       console.log('All tasks from ' + org + ' was retreived.')
     } else {
-      res.send() // TODO: send back a proper message
+      res.status(200).send()
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
@@ -68,7 +68,7 @@ apiController.assignUser = (req, res) => {
   const ref = db.ref('organizations/' + org).child('users')
   const payload = req.body
   ref.push(payload.payload)
-  res.send() // TODO: send back a proper message
+  res.status(200).send()
   console.log('A new user was assigned on ' + org)
 }
 
@@ -82,12 +82,12 @@ apiController.orgTask = (req, res) => {
       const data = Object.values(snapshot.val())
       data.forEach(element => {
         if (element.id === id) {
-          res.send(element)
+          res.status(200).send(element)
           console.log('Task with ID ' + id + ' from ' + org + ' was retreived.')
         }
       })
     } else {
-      res.send() // TODO: send back a proper message
+      res.status(404).send()
     }
   }, function (errorObject) {
     console.log('The read failed: ' + errorObject.code)
@@ -102,8 +102,7 @@ apiController.orgNewTask = (req, res) => {
   ref.push(payload)
     .then((snapshot) => {
       ref.child(snapshot.key).update({ id: snapshot.key })
-      res.send()
-      // TODO: send back a proper message
+      res.status(200).send()
       sendEmail(payload, org)
       console.log('A new task was created on ' + org)
     })
@@ -124,8 +123,7 @@ apiController.orgEditTask = (req, res) => {
       if (error) {
         console.log('The read failed: ' + error.code)
       } else {
-        // TODO: send back a proper message
-        res.send()
+        res.status(200).send()
         console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
       }
     })
@@ -138,8 +136,7 @@ apiController.orgDeleteTask = (req, res) => {
   const id = req.params.id
   db.ref('organizations/' + org).child('tasks').child(id).remove()
     .then(() => {
-      // TODO: send back a proper message
-      res.send()
+      res.status(200).send()
       console.log('Task with ID ' + id + ' from ' + org + ' was deleted.')
     })
 }
