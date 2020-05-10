@@ -20,6 +20,19 @@
     "produces": [
       "application/json"
     ],
+    "securityDefinitions": {
+      "JWT": {
+        "description": "Enter JWT token provided after login",
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "security": [
+      {
+        "JWT": []
+      }
+    ],
     "paths": {
       "/organization/{orgId}/tasks/all/": {
         "parameters": [
@@ -146,6 +159,44 @@
           }
         }
       },
+      "/user/organization/all/": {
+        "get": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Get all organizations for a user",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type":"array",
+                "items": {
+                  "$ref": "#/definitions/Users"
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/tasks/all/": {
+        "get": {
+          "tags": [
+            "Users"
+          ],
+          "summary": "Get all tasks for a user",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type":"array",
+                "items": {
+                  "$ref": "#/definitions/Users"
+                }
+              }
+            }
+          }
+        }
+      },
       "/organization/{orgId}/users/all/": {
         "parameters": [
           {
@@ -158,17 +209,17 @@
         ],
         "get": {
           "tags": [
-            "Organization"
+            "Users"
           ],
-          "summary": "Get users allocated to a specific organization",
+          "summary": "Get all users that have access to a specific organization",
           "responses": {
             "200": {
               "description": "OK",
               "schema": {
                 "type":"array",
                 "items": {
-                "$ref": "#/definitions/Users"
-              }
+                  "$ref": "#/definitions/Users"
+                }
               }
             }
           }

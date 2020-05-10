@@ -1,6 +1,5 @@
 const express = require('express')
 const path = require('path')
-const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('./swagger.json')
 const firebase = require('firebase-admin')
@@ -18,9 +17,6 @@ const app = express()
 app.use(express.json()) // Used to parse JSON bodies
 app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 
-app.use(cors({
-  origin: 'http://localhost:4200/'
-}))
 // Routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.use('/api/v1', require('./routes/apiRouter'))
