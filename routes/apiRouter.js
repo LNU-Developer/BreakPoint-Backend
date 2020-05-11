@@ -38,19 +38,19 @@ const checkifAuthorized = (req, res, next) => {
 // ORG APIS -----------------------------------------------------------------------------------------------
 
 // Fetch all tasks from an orginization
-router.get('/organization/:no/tasks/all/', checkIfAuthenticated, checkifAuthorized, apiController.orgTasks)
+router.get('/organization/:no/tasks/all/', checkIfAuthenticated, apiController.orgTasks)
 
 // Add new task
-router.post('/organization/:no/tasks/new/', checkIfAuthenticated, checkifAuthorized, apiController.orgNewTask)
+router.post('/organization/:no/tasks/new/', checkIfAuthenticated, apiController.orgNewTask)
 
 // fetch a specific task
-router.get('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgTask)
+router.get('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgTask)
 
 // Edit task
-router.put('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgEditTask)
+router.put('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgEditTask)
 
 // delete task
-router.delete('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgDeleteTask)
+router.delete('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgDeleteTask)
 
 // USER APIS -----------------------------------------------------------------------------------------------
 
