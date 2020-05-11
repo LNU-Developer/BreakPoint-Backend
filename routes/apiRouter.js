@@ -38,19 +38,19 @@ const checkifAuthorized = (req, res, next) => {
 // ORG APIS -----------------------------------------------------------------------------------------------
 
 // Fetch all tasks from an orginization
-router.get('/organization/:no/tasks/all/', checkIfAuthenticated, apiController.orgTasks)
+router.get('/organization/:no/tasks/all/', checkIfAuthenticated, checkifAuthorized, apiController.orgTasks)
 
 // Add new task
-router.post('/organization/:no/tasks/new/', checkIfAuthenticated, apiController.orgNewTask)
+router.post('/organization/:no/tasks/new/', checkIfAuthenticated, checkifAuthorized, apiController.orgNewTask)
 
 // fetch a specific task
-router.get('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgTask)
+router.get('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgTask)
 
 // Edit task
-router.put('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgEditTask)
+router.put('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgEditTask)
 
 // delete task
-router.delete('/organization/:no/tasks/:id/', checkIfAuthenticated, apiController.orgDeleteTask)
+router.delete('/organization/:no/tasks/:id/', checkIfAuthenticated, checkifAuthorized, apiController.orgDeleteTask)
 
 // USER APIS -----------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ router.get('/user/organization/all/', checkIfAuthenticated, userController.userO
 router.get('/user/tasks/all/', checkIfAuthenticated, userController.userTasks)
 
 // Fetch users that are have access to a specific organization
-router.get('/organization/:no/users/all/', checkIfAuthenticated, userController.orgUsers)
+router.get('/organization/:no/users/all/', checkIfAuthenticated, checkifAuthorized, userController.orgUsers)
 
 // TODO:Not fixed yet
 // Assign a user to an organization
