@@ -61,7 +61,7 @@ router.get('/user/organization/all/', checkIfAuthenticated, userController.userO
 router.get('/user/tasks/all/', checkIfAuthenticated, userController.userTasks)
 
 // Fetch users that are have access to a specific organization
-router.get('/organization/:no/users/all/', checkIfAuthenticated, userController.orgUsers)
+router.get('/organization/:no/users/all/', checkIfAuthenticated, checkifAuthorized, userController.orgUsers)
 
 // TODO:Not fixed yet
 // Assign a user to an organization
