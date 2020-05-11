@@ -6,33 +6,17 @@ const apiController = require('../controllers/apiController')
 const authController = require('../controllers/authController')
 const userController = require('../controllers/userController')
 const RSA_PUBLIC_KEY = fs.readFileSync('././credentials/jwtRS256.key.pub', 'utf8')
-const firebase = require('firebase-admin')
-const db = firebase.database()
 
 // MIDDLEWARES --------------------------------------------------------------------------------------------
 
 const checkIfAuthenticated = expressJwt({ secret: RSA_PUBLIC_KEY })
 
 const checkifAuthorized = (req, res, next) => {
-  const ref = db.ref('users/').orderByChild('email').equalTo(req.user.sub)
-  ref.once('value', function (snapshot) {
-    if (snapshot.exists()) {
-      const user = Object.values(snapshot.val())
-      const organizationString = user[0].organizations
-      const tmpString = organizationString.substr(1).slice(0, -1)
-      const organizationArray = tmpString.split(', ')
-      if (organizationArray.includes(req.params.no)) {
-        next()
-      } else {
-        console.log(`Unauthorized request by ${req.user.sub} on organization ${req.params.no}`)
-        res.status(401).send()
-      }
-    } else {
-      res.status(404).send()
-    }
-  }, function (errorObject) {
-    console.log('The read failed: ' + errorObject.code)
-  })
+  if (req.user.aud.includes(req.params.no)) {
+    next()
+  } else {
+    res.status(401).send()
+  }
 }
 
 // ORG APIS -----------------------------------------------------------------------------------------------

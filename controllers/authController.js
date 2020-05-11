@@ -73,15 +73,29 @@ authController.exchangeCode = (req, res) => {
           })
 
           // Signing own JWT Token
+          console.log(id.organizations)
           const RSA_PRIVATE_KEY = fs.readFileSync('././credentials/jwtRS256.key', 'utf8')
-          const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
-            algorithm: 'RS256',
-            expiresIn: 43200,
-            subject: id.email
-          })
-          res.status(200).json({
-            idToken: jwtBearerToken,
-            expiresIn: 43200
+
+          const ref2 = db.ref('users/').orderByChild('email').equalTo(id.email)
+          ref2.once('value', function (snapshot) {
+            if (snapshot.exists()) {
+              const user = Object.values(snapshot.val())
+              const organizationString = user[0].organizations
+              const tmpString = organizationString.substr(1).slice(0, -1)
+              const organizationArray = tmpString.split(', ')
+              const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
+                algorithm: 'RS256',
+                expiresIn: 43200,
+                subject: id.email,
+                audience: organizationArray
+              })
+              res.status(200).json({
+                idToken: jwtBearerToken,
+                expiresIn: 43200
+              })
+            }
+          }, function (errorObject) {
+            console.log('The read failed: ' + errorObject.code)
           })
         })
     })
