@@ -10,6 +10,9 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.emailUsername,
     pass: process.env.emailPassword
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 })
 
@@ -115,18 +118,22 @@ apiController.orgEditTask = (req, res) => {
   const payload = req.body.payload || req.body
   const ref = db.ref('organizations/' + org).child('tasks').child(id)
   ref.once('value', function (snapshot) {
-    const data = Object.values(snapshot.val())
-    if (data.assignee !== payload.assignee) {
-      sendEmail(payload, org)
-    }
-    ref.update(payload, function (error) {
-      if (error) {
-        console.log('The read failed: ' + error.code)
-      } else {
-        res.status(200).send()
-        console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
+    if (snapshot.exists()) {
+      const data = Object.values(snapshot.val())
+      if (data.assignee !== payload.assignee) {
+        sendEmail(payload, org)
       }
-    })
+      ref.update(payload, function (error) {
+        if (error) {
+          console.log('The read failed: ' + error.code)
+        } else {
+          res.status(200).send()
+          console.log('Task with ID ' + id + ' from ' + org + ' was updated.')
+        }
+      })
+    } else {
+      apiController.orgNewTask(req, res)
+    }
   })
 }
 
