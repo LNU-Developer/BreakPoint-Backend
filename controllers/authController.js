@@ -73,7 +73,6 @@ authController.exchangeCode = (req, res) => {
           })
 
           // Signing own JWT Token
-          console.log(id.organizations)
           const RSA_PRIVATE_KEY = fs.readFileSync('././credentials/jwtRS256.key', 'utf8')
 
           const ref2 = db.ref('users/').orderByChild('email').equalTo(id.email)
